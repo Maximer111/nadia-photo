@@ -7,7 +7,10 @@
 import pathlib
 import re
 
-SITE = "https://nadiaphoto.mensreactivation.com"
+import os
+STAGING = os.environ.get("STAGING") == "1"
+SITE = ("https://maximer111.github.io/nadia-photo"
+        if STAGING else "https://nadiaphoto.mensreactivation.com")
 ROOT = pathlib.Path(__file__).parent
 
 NAV = [
@@ -671,11 +674,20 @@ def build():
             headclass=page.get("headclass", ""),
         ).replace("__EMAIL__", EMAIL)
 
+        if STAGING:
+            html = html.replace('content="index, follow, max-image-preview:large"',
+                                'content="noindex, nofollow"')
         if page.get("noindex"):
             html = html.replace('content="index, follow, max-image-preview:large"',
                                 'content="noindex, follow"')
         else:
             urls.append(page["url"])
+
+        # Внутренние ссылки делаем относительными: страницы лежат плоско в корне,
+        # поэтому одинаково работают и на своём домене, и на подпути вида
+        # user.github.io/nadia-photo/. Абсолютные /css/... на подпути ломаются.
+        html = re.sub(r'(href|src)="/([^"/][^"]*)"', r'\1="\2"', html)
+        html = html.replace('href="/"', 'href="./"')
 
         (ROOT / page["file"]).write_text(html, encoding="utf-8")
         print("  ✓", page["file"])
@@ -691,6 +703,7 @@ def build():
     print("  ✓ sitemap.xml")
 
     (ROOT / "robots.txt").write_text(
+        "User-agent: *\nDisallow: /\n" if STAGING else
         f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     print("  ✓ robots.txt")
 
@@ -706,7 +719,8 @@ def selftest():
         assert html.count("<h1") == 1, f"{page['file']}: должен быть ровно один h1"
         assert f'<link rel="canonical" href="{SITE}{page["url"]}">' in html, page["file"]
         # noindex только на юридических
-        assert ("noindex" in html) == bool(page.get("noindex")), page["file"]
+        if not STAGING:
+            assert ("noindex" in html) == bool(page.get("noindex")), page["file"]
     sm = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
     assert "/terms.html" not in sm and "/policy.html" not in sm, "юр. страницы попали в sitemap"
     assert sm.count("<url>") == len([p for p in PAGES if not p.get("noindex")])
