@@ -429,7 +429,7 @@ a.plate:hover img, .plate.is-hover img { transform: scale(1.035); }
   align-items: baseline;
   padding: clamp(2rem, 1rem + 3vw, 3.4rem) 0;
   border-bottom: 1px solid var(--line);
-  transition: background .5s var(--ease), padding-inline .5s var(--ease);
+  transition: background .5s var(--ease);
 }
 .offer:hover { background: rgba(236, 231, 222, .5); }
 .offer__name {
