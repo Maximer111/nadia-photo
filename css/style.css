@@ -402,8 +402,13 @@ a.plate:hover img, .plate.is-hover img { transform: scale(1.035); }
   margin-bottom: .5em;
 }
 .prose li::before {
-  content: ""; position: absolute; left: 0; top: .95em;
-  width: .7rem; height: 1px; background: var(--clay);
+  content: "\2713";           /* галочка вместо чёрточки */
+  position: absolute; left: 0; top: 0;
+  /* Jost галочку не содержит, поэтому для глифа свой стек */
+  font-family: "Jost", "Helvetica Neue", "Segoe UI Symbol", Arial, sans-serif;
+  font-size: .95em;
+  line-height: inherit;
+  color: var(--clay);
 }
 
 /* two-column split for inner pages */
