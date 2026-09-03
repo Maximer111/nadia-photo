@@ -636,3 +636,68 @@ a.plate:hover img, .plate.is-hover img { transform: scale(1.035); }
 .site-head--over:not(.is-stuck) .brand small { color: rgba(251,249,246,.72); }
 .site-head--over:not(.is-stuck) .burger span { background: #FBF9F6; }
 .site-head--over:not(.is-stuck) .nav:not(.is-open) a:hover { color: #fff; }
+
+/* --- главная: вступление, портрет, контакты ------------------------------ */
+.intro {
+  padding: clamp(9rem, 6.5rem + 8vw, 14rem) 0 clamp(3rem, 2rem + 3vw, 4.5rem);
+  text-align: center;
+}
+.intro__title {
+  font-size: var(--step-3);
+  letter-spacing: -.01em;
+}
+.intro__line {
+  margin-top: 2.2rem;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.portrait {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-inline: var(--gut);
+}
+.portrait img {
+  width: 100%;
+  height: auto;
+  filter: contrast(1.02);
+}
+
+.contacts {
+  text-align: center;
+  padding: clamp(3rem, 2rem + 4vw, 5.5rem) 0 clamp(5rem, 3rem + 6vw, 9rem);
+}
+.contacts__name {
+  font-size: var(--step-2);
+  line-height: 1.2;
+  margin-bottom: 1.8rem;
+}
+.contacts__lines {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .8rem 2.5rem;
+  margin-bottom: 1.8rem;
+}
+.contacts__lines a {
+  font-size: var(--step-0);
+  letter-spacing: .16em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: .35rem;
+  transition: border-color .4s var(--ease);
+}
+.contacts__lines a:hover { border-color: var(--ink); }
+.contacts__services { display: block; }
+.contacts__tagline {
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 36ch;
+  margin-inline: auto;
+  text-wrap: balance;
+}

@@ -20,8 +20,11 @@ NAV = [
     ("/schedule.html", "Расписание"),
 ]
 
-EMAIL = "hello@example.com"          # TODO: заменить на реальную почту
-INSTAGRAM = "https://instagram.com/"  # TODO: заменить на реальный профиль
+EMAIL = ""  # почты пока нет, связь через Instagram и телефон
+INSTAGRAM = "https://www.instagram.com/nadi_loban/"
+PHONE = "+380676903262"
+PHONE_HREF = "+380676903262"
+BRAND = "Nadiia Loban Photography"
 
 SHELL = """<!doctype html>
 <html lang="ru">
@@ -35,7 +38,7 @@ SHELL = """<!doctype html>
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:site_name" content="Надя · Фотограф в Будапеште">
+<meta property="og:site_name" content="Nadiia Loban Photography">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{site}{url}">
@@ -53,7 +56,7 @@ SHELL = """<!doctype html>
 <a class="skip" href="#main">К содержимому</a>
 
 <header class="site-head{headclass}">
-  <a class="brand" href="/">Надя<small>Будапешт</small></a>
+  <a class="brand" href="/">Nadiia Loban<small>Photography · Budapest</small></a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Меню">
     <span></span><span></span>
   </button>
@@ -70,8 +73,8 @@ SHELL = """<!doctype html>
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <p class="label">Надя · Фотограф</p>
-        <p class="lede" style="font-size:var(--step-1);max-width:22ch">Будапешт, Венгрия<br>и вся Европа</p>
+        <p class="label">Nadiia Loban Photography</p>
+        <p class="lede" style="font-size:var(--step-1);max-width:24ch">Individual. Couple.<br>Family. Event.</p>
       </div>
       <div>
         <p class="label">Разделы</p>
@@ -80,13 +83,13 @@ SHELL = """<!doctype html>
       <div>
         <p class="label">Связь</p>
         <ul>
-          <li><a href="mailto:{email}">{email}</a></li>
-          <li><a href="{ig}" rel="me noopener" target="_blank">Instagram</a></li>
+          <li><a href="tel:{phone_href}">{phone}</a></li>
+          <li><a href="{ig}" rel="me noopener" target="_blank">Instagram &mdash; @nadi_loban</a></li>
         </ul>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Надя. Все фотографии защищены авторским правом.</span>
+      <span>© 2026 Nadiia Loban Photography. Все фотографии защищены авторским правом.</span>
       <span><a href="/terms.html">Условия</a> &nbsp;·&nbsp; <a href="/policy.html">Конфиденциальность</a></span>
     </div>
   </div>
@@ -107,28 +110,31 @@ def ld(obj):
 # --------------------------------------------------------------------------
 
 HOME_BODY = """
-  <section class="hero">
-    <div class="hero__media">
-      <figure class="ph" data-ph="Главное фото" style="position:absolute;inset:0"></figure>
+  <section class="intro">
+    <div class="wrap narrow">
+      <h1 class="display intro__title">Photography in Budapest</h1>
+      <p class="intro__line">We will never be so young again!<br>Save the moment!</p>
     </div>
-    <div class="hero__inner">
-      <h1 class="display hero__name">Надя<em>фотограф</em></h1>
-      <p class="hero__sub">Будапешт &middot; Европа</p>
-    </div>
-    <div class="scroll-cue" aria-hidden="true"></div>
   </section>
 
-  <section class="band">
-    <div class="wrap narrow manifesto">
-      <p class="rv">Я снимаю не позы.<br>Я снимаю то, что <em>между</em> людьми.</p>
-      <p class="after rv">
-        Взгляд, который держится на секунду дольше нужного. Руку, которая сама
-        находит другую руку. Смех, который начался раньше, чем я успела поднять камеру.
+  <figure class="portrait">
+    <img src="img/nadia-hero-1400.jpg"
+         srcset="img/nadia-hero-800.jpg 800w, img/nadia-hero-1400.jpg 1400w"
+         sizes="(max-width: 760px) 92vw, 720px"
+         width="1400" height="2100" fetchpriority="high"
+         alt="Чёрно-белый портрет: девушка в клетчатой рубашке на контровом закатном свете, волосы развевает ветер">
+  </figure>
+
+  <section class="contacts">
+    <div class="wrap narrow">
+      <p class="contacts__name display rv">Nadiia Loban Photography</p>
+      <p class="contacts__lines rv">
+        <a href="tel:+380676903262">+380&nbsp;67&nbsp;690&nbsp;32&nbsp;62</a>
+        <a href="__CONTACT__" rel="me noopener" target="_blank">@nadi_loban</a>
       </p>
-      <p class="after rv">
-        Мне не нужно, чтобы вы умели позировать. Мне нужно, чтобы вам было тепло
-        рядом друг с другом. Всё остальное я сделаю сама.
-      </p>
+      <p class="label contacts__services rv">Individual. Couple. Family. Event</p>
+      <hr class="rule rv" style="margin:3.5rem 0">
+      <p class="contacts__tagline display rv">I create cinematic portraits for those who want to remember themselves alive</p>
     </div>
   </section>
 
@@ -147,46 +153,33 @@ HOME_BODY = """
       </div>
     </div>
     <figure class="plate plate--r169 ph bleed rv" data-ph="Фото во всю ширину"></figure>
-    <div class="wrap" style="margin-top:var(--band)">
-      <div class="duo duo--flip">
-        <figure class="plate plate--r34 ph rv" data-ph="Фото 3:4"></figure>
-        <figure class="plate plate--r32 ph rv" data-ph="Фото 3:2"></figure>
-      </div>
-    </div>
   </section>
 
-  <section class="band" style="background:var(--paper-deep)">
-    <div class="wrap quote rv">
-      <blockquote>Хорошая фотография не о том, как вы выглядите. Она о том, каково это было.</blockquote>
-      <cite>Надя</cite>
-    </div>
-  </section>
-
-  <section class="band" aria-labelledby="work-h">
+  <section class="band" style="padding-top:0" aria-labelledby="work-h">
     <div class="wrap">
       <p class="label rv" style="margin-bottom:3rem">02 &mdash; Чем я занимаюсь</p>
       <h2 id="work-h" class="display rv" style="font-size:var(--step-2);max-width:18ch;margin-bottom:4rem">
         Съёмки, обучение и мои <em style="font-style:italic">пресеты</em>
       </h2>
       <div class="offers">
-        <a class="offer rv" href="/sessions.html">
+        <a class="offer rv" href="sessions.html">
           <div class="offer__name"><span>Съёмка</span>Фотосессии</div>
-          <p class="offer__desc">Пары, семьи и портреты. Два часа, живой свет, никаких заученных поз. Будапешт и выезды по Европе.</p>
+          <p class="offer__desc">Individual. Couple. Family. Event. Будапешт и выезды по Европе.</p>
           <div class="offer__price">от 000&nbsp;€</div>
         </a>
-        <a class="offer rv" href="/presets.html">
+        <a class="offer rv" href="presets.html">
           <div class="offer__name"><span>Обработка</span>Авторские пресеты</div>
-          <p class="offer__desc">Наборы для Lightroom Classic, которыми я обрабатываю собственные съёмки. Цвет и чёрно-белое.</p>
+          <p class="offer__desc">Наборы для Lightroom Classic, которыми я обрабатываю собственные съёмки.</p>
           <div class="offer__price">от 00&nbsp;€</div>
         </a>
-        <a class="offer rv" href="/workshop.html">
+        <a class="offer rv" href="workshop.html">
           <div class="offer__name"><span>Обучение</span>Воркшоп 1:1</div>
-          <p class="offer__desc">Полный день вдвоём: теория, съёмка живой пары, отбор и обработка на моих глазах.</p>
+          <p class="offer__desc">Полный день вдвоём: теория, съёмка живой пары, отбор и обработка.</p>
           <div class="offer__price">от 0&nbsp;000&nbsp;€</div>
         </a>
-        <a class="offer rv" href="/schedule.html">
+        <a class="offer rv" href="schedule.html">
           <div class="offer__name"><span>Группы</span>Расписание воркшопов</div>
-          <p class="offer__desc">Двухдневные групповые воркшопы в европейских городах. Даты, языки и число мест.</p>
+          <p class="offer__desc">Двухдневные групповые воркшопы в европейских городах.</p>
           <div class="offer__price">2026</div>
         </a>
       </div>
@@ -195,9 +188,9 @@ HOME_BODY = """
 
   <section class="band cta">
     <div class="wrap">
-      <h2 class="display rv">Напишите мне, если чувствуете, что это ваш свет</h2>
-      <p class="rv">Расскажите, кто вы, когда вы в Будапеште и чего вам хочется от съёмки. Я отвечаю сама, обычно в течение суток.</p>
-      <a class="btn rv" href="mailto:__EMAIL__"><span>Написать мне</span></a>
+      <h2 class="display rv">Save the moment</h2>
+      <p class="rv">Напишите в Instagram или позвоните &mdash; расскажу про свободные даты.</p>
+      <a class="btn rv" href="__CONTACT__" rel="noopener" target="_blank"><span>Написать в Instagram</span></a>
     </div>
   </section>
 """
@@ -273,7 +266,7 @@ SESSIONS_BODY = """
     <div class="wrap">
       <h2 class="display rv">Свободные даты уточняйте письмом</h2>
       <p class="rv">Напишите, когда вы в Будапеште, — отвечу, свободна ли дата, и пришлю всё остальное.</p>
-      <a class="btn rv" href="mailto:__EMAIL__"><span>Проверить дату</span></a>
+      <a class="btn rv" href="__CONTACT__"><span>Проверить дату</span></a>
     </div>
   </section>
 """
@@ -343,7 +336,7 @@ PRESETS_BODY = """
     <div class="wrap">
       <h2 class="display rv">Не уверены, подойдёт ли стиль?</h2>
       <p class="rv">Возьмите тестовый набор из двух пресетов. Если подойдёт — стоимость зачту в полный пак.</p>
-      <a class="btn rv" href="mailto:__EMAIL__"><span>Написать мне</span></a>
+      <a class="btn rv" href="__CONTACT__"><span>Написать мне</span></a>
     </div>
   </section>
 """
@@ -414,7 +407,7 @@ WORKSHOP_BODY = """
     <div class="wrap">
       <h2 class="display rv">Забронировать день</h2>
       <p class="rv">Напишите, когда вам удобно и что для вас сейчас самое непонятное в съёмке. Подберём дату.</p>
-      <a class="btn rv" href="mailto:__EMAIL__"><span>Написать мне</span></a>
+      <a class="btn rv" href="__CONTACT__"><span>Написать мне</span></a>
     </div>
   </section>
 """
@@ -436,7 +429,7 @@ def schedule_rows():
           <div class="date-row__when">{when}<span>{days}</span></div>
           <div class="date-row__where">{city}, {country}</div>
           <div class="date-row__meta">Язык: {lang} &nbsp;·&nbsp; {seats} мест</div>
-          <a class="btn btn--ghost" href="mailto:__EMAIL__?subject=Воркшоп {city}"><span>{'Мест нет' if full else 'Записаться'}</span></a>
+          <a class="btn btn--ghost" href="__CONTACT__"><span>{'Мест нет' if full else 'Записаться'}</span></a>
         </div>""")
     return "\n".join(out)
 
@@ -477,7 +470,7 @@ __ROWS__
     <div class="wrap">
       <h2 class="display rv">Вашего города нет в списке?</h2>
       <p class="rv">Напишите — если наберётся группа, приеду. Так появилась половина дат в этом расписании.</p>
-      <a class="btn rv" href="mailto:__EMAIL__"><span>Предложить город</span></a>
+      <a class="btn rv" href="__CONTACT__"><span>Предложить город</span></a>
     </div>
   </section>
 """
@@ -542,18 +535,19 @@ LEGAL_POLICY = """
 PAGES = [
     dict(
         file="index.html", url="/",
-        title="Надя — фотограф в Будапеште | Съёмки пар и семей",
-        desc="Надя, фотограф в Будапеште. Естественные съёмки пар, семей и портретов. "
-             "Фотосессии в Будапеште и по Европе, воркшопы для фотографов, авторские пресеты.",
-        body=HOME_BODY, headclass=" site-head--over",
+        title="Nadiia Loban Photography — фотограф в Будапеште",
+        desc="Nadiia Loban Photography. Individual, couple, family and event photography in Budapest. Кинематографичные портреты, съёмки в Будапеште и по Европе.",
+        body=HOME_BODY,
         schema=ld("""{
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Person",
       "@id": "%(site)s/#person",
-      "name": "Надя",
+      "name": "Nadiia Loban",
       "jobTitle": "Фотограф",
+      "telephone": "+380676903262",
+      "sameAs": ["https://www.instagram.com/nadi_loban/"],
       "url": "%(site)s/",
       "address": { "@type": "PostalAddress", "addressLocality": "Будапешт", "addressCountry": "HU" },
       "knowsAbout": ["Портретная фотография", "Семейная фотография", "Съёмка пар"]
@@ -561,7 +555,7 @@ PAGES = [
     {
       "@type": "ProfessionalService",
       "@id": "%(site)s/#business",
-      "name": "Надя · Фотограф в Будапеште",
+      "name": "Nadiia Loban Photography",
       "image": "%(site)s/img/og.jpg",
       "url": "%(site)s/",
       "founder": { "@id": "%(site)s/#person" },
@@ -570,13 +564,15 @@ PAGES = [
         { "@type": "Place", "name": "Европа" }
       ],
       "address": { "@type": "PostalAddress", "addressLocality": "Будапешт", "addressCountry": "HU" },
-      "priceRange": "€€"
+      "priceRange": "€€",
+      "telephone": "+380676903262",
+      "sameAs": ["https://www.instagram.com/nadi_loban/"]
     },
     {
       "@type": "WebSite",
       "@id": "%(site)s/#website",
       "url": "%(site)s/",
-      "name": "Надя · Фотограф в Будапеште",
+      "name": "Nadiia Loban Photography",
       "inLanguage": "ru",
       "publisher": { "@id": "%(site)s/#person" }
     }
@@ -585,7 +581,7 @@ PAGES = [
     ),
     dict(
         file="sessions.html", url="/sessions.html",
-        title="Фотосессии в Будапеште | Надя, фотограф",
+        title="Фотосессии в Будапеште | Nadiia Loban Photography",
         desc="Съёмка пар, семей и портретов в Будапеште и по Европе. Два часа, живой свет, "
              "150+ обработанных кадров. Стоимость и свободные даты.",
         body=SESSIONS_BODY,
@@ -594,7 +590,7 @@ PAGES = [
   "@type": "Service",
   "name": "Фотосессия в Будапеште",
   "serviceType": "Портретная и парная фотосъёмка",
-  "provider": { "@type": "Person", "@id": "%(site)s/#person", "name": "Надя" },
+  "provider": { "@type": "Person", "@id": "%(site)s/#person", "name": "Nadiia Loban" },
   "areaServed": [
     { "@type": "City", "name": "Будапешт" },
     { "@type": "Place", "name": "Европа" }
@@ -604,7 +600,7 @@ PAGES = [
     ),
     dict(
         file="presets.html", url="/presets.html",
-        title="Авторские пресеты для Lightroom | Надя, фотограф",
+        title="Пресеты для Lightroom | Nadiia Loban Photography",
         desc="Наборы пресетов для Adobe Lightroom Classic, которыми я обрабатываю свои съёмки. "
              "Цветные и чёрно-белые пакеты, тестовый набор.",
         body=PRESETS_BODY,
@@ -617,7 +613,7 @@ PAGES = [
     ),
     dict(
         file="workshop.html", url="/workshop.html",
-        title="Индивидуальный воркшоп 1:1 для фотографов | Надя",
+        title="Воркшоп 1:1 для фотографов | Nadiia Loban",
         desc="Полный день индивидуального обучения: теория, практическая съёмка пары, "
              "отбор и обработка кадров, разбор результата.",
         body=WORKSHOP_BODY,
@@ -627,13 +623,13 @@ PAGES = [
   "name": "Индивидуальный воркшоп 1:1 по фотографии",
   "description": "Полный день индивидуального обучения фотографии: теория, практическая съёмка пары, отбор и обработка.",
   "inLanguage": "ru",
-  "provider": { "@type": "Person", "@id": "%(site)s/#person", "name": "Надя" },
+  "provider": { "@type": "Person", "@id": "%(site)s/#person", "name": "Nadiia Loban" },
   "url": "%(site)s/workshop.html"
 }""" % {"site": SITE}),
     ),
     dict(
         file="schedule.html", url="/schedule.html",
-        title="Расписание воркшопов 2026 | Надя, фотограф",
+        title="Расписание воркшопов 2026 | Nadiia Loban",
         desc="Даты групповых двухдневных воркшопов по фотографии в 2026 году: город, язык, "
              "количество мест и запись.",
         body=SCHEDULE_BODY.replace("__ROWS__", schedule_rows()),
@@ -644,10 +640,10 @@ PAGES = [
   "itemListElement": []
 }"""),
     ),
-    dict(file="terms.html", url="/terms.html", title="Условия | Надя, фотограф",
+    dict(file="terms.html", url="/terms.html", title="Условия | Nadiia Loban Photography",
          desc="Условия оказания услуг и продажи цифровых товаров.",
          body=LEGAL_TERMS, schema="", noindex=True),
-    dict(file="policy.html", url="/policy.html", title="Политика конфиденциальности | Надя, фотограф",
+    dict(file="policy.html", url="/policy.html", title="Политика конфиденциальности | Nadiia Loban",
          desc="Как обрабатываются персональные данные посетителей сайта.",
          body=LEGAL_POLICY, schema="", noindex=True),
 ]
@@ -671,8 +667,9 @@ def build():
             title=page["title"], desc=page["desc"], site=SITE, url=page["url"],
             schema=page["schema"], nav=nav_html(page["url"]), footnav=foot_html(),
             body=page["body"], email=EMAIL, ig=INSTAGRAM,
+            phone=PHONE, phone_href=PHONE_HREF,
             headclass=page.get("headclass", ""),
-        ).replace("__EMAIL__", EMAIL)
+        ).replace("__CONTACT__", INSTAGRAM)
 
         if STAGING:
             html = html.replace('content="index, follow, max-image-preview:large"',
@@ -714,7 +711,8 @@ def selftest():
     for page in PAGES:
         html = (ROOT / page["file"]).read_text(encoding="utf-8")
         assert "{title}" not in html and "{body}" not in html, page["file"]
-        assert "__EMAIL__" not in html, f"{page['file']}: незаменённый __EMAIL__"
+        assert "__CONTACT__" not in html, f"{page['file']}: незаменённый __CONTACT__"
+        assert "mailto:" not in html, f"{page['file']}: остался mailto, почты нет"
         assert "__ROWS__" not in html, f"{page['file']}: незаменённый __ROWS__"
         assert html.count("<h1") == 1, f"{page['file']}: должен быть ровно один h1"
         assert f'<link rel="canonical" href="{SITE}{page["url"]}">' in html, page["file"]
