@@ -7,6 +7,7 @@ Test:     python3 build.py --test
 
 Edit page copy in the *_BODY constants below; edit header/footer in SHELL.
 """
+import hashlib
 import os
 import pathlib
 import re
@@ -51,7 +52,7 @@ SHELL = """<!doctype html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231A1917'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23F7F5F1' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v={cssv}">
 {schema}
 </head>
 <body>
@@ -98,10 +99,18 @@ SHELL = """<!doctype html>
   </div>
 </footer>
 
-<script src="/js/main.js" defer></script>
+<script src="/js/main.js?v={jsv}" defer></script>
 </body>
 </html>
 """
+
+
+def asset_v(rel):
+    """Короткий хэш файла в query-строке: GitHub Pages отдаёт ассеты с
+    max-age=600, и без этого правки до 10 минут не видны на уже открытой
+    странице. Хэш меняется только при изменении файла."""
+    p = ROOT / rel
+    return hashlib.md5(p.read_bytes()).hexdigest()[:8] if p.exists() else "0"
 
 
 def ld(obj):
@@ -679,6 +688,7 @@ def build():
             title=page["title"], desc=page["desc"], site=SITE, url=page["url"],
             schema=page["schema"], nav=nav_html(page["url"]), footnav=foot_html(),
             body=page["body"], ig=INSTAGRAM, phone=PHONE, phone_href=PHONE_HREF,
+            cssv=asset_v("css/style.css"), jsv=asset_v("js/main.js"),
         )
         html = (html.replace("__CONTACT__", INSTAGRAM)
                     .replace("__PHONE_HREF__", PHONE_HREF)
@@ -726,6 +736,8 @@ def selftest():
         assert "{title}" not in html and "{body}" not in html, f
         for token in ("__CONTACT__", "__PHONE__", "__PHONE_HREF__", "__ROWS__"):
             assert token not in html, f"{f}: leftover {token}"
+        assert re.search(r'style\.css\?v=[0-9a-f]{8}', html), f"{f}: нет версии у CSS"
+        assert re.search(r'main\.js\?v=[0-9a-f]{8}', html), f"{f}: нет версии у JS"
         assert "mailto:" not in html, f"{f}: mailto left behind, there is no email"
         assert html.count("<h1") == 1, f"{f}: expected exactly one h1"
         assert f'<link rel="canonical" href="{SITE}{page["url"]}">' in html, f
