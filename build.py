@@ -8,6 +8,7 @@ Test:     python3 build.py --test
 Edit page copy in the *_BODY constants below; edit header/footer in SHELL.
 """
 import hashlib
+import html as htmlmod
 import os
 import pathlib
 import re
@@ -113,6 +114,37 @@ def asset_v(rel):
     return hashlib.md5(p.read_bytes()).hexdigest()[:8] if p.exists() else "0"
 
 
+from photos import RATIOS, SPEC
+
+ALT = {
+    "9957": "A girl in a trench coat on the step of a red door, her mother beside her",
+    "2858": "Black and white: a woman in a white dress spinning on a hilltop, the skirt flying out",
+    "9487": "A couple on a tiled stairway, she looks up laughing with a bouquet in her hand",
+    "9203": "Black and white close-up of a couple kissing on a tree-lined street",
+    "4461": "A woman in a white dress lifting the fabric against the setting sun",
+    "9086": "A couple walking hand in hand down a tree-lined city street",
+    "9318": "A couple kissing by a wrought-iron fence, she holds a bouquet out to the side",
+    "9096": "A smiling girl lying in her mother's lap in warm light",
+    "8734": "Black and white: a mother kneels on the pavement to hug her daughter",
+    "9973": "Mother and daughter talking on the steps of a red door",
+    "8406": "A little girl in sunglasses and a trench coat looking at her hands",
+    "4321": "A woman in a white dress spreading a lace skirt into the sunset light",
+    "9565": "A couple by yellow railings, she smells a pink bouquet and he smiles at her",
+}
+
+
+def photo(m):
+    pid, *extra = m.group(1).split()
+    cls, _, widths = SPEC[pid]
+    big = max(widths)
+    srcset = ", ".join(f"img/p/{pid}-{w}.jpg {w}w" for w in widths)
+    sizes = "100vw" if "bleed" in extra else "(max-width: 760px) 92vw, 50vw"
+    return (f'<figure class="plate plate--{cls} {" ".join(extra + ["rv"])}">'
+            f'<img src="img/p/{pid}-{min(widths)}.jpg" srcset="{srcset}" sizes="{sizes}" '
+            f'width="{big}" height="{round(big / RATIOS[cls])}" loading="lazy" decoding="async" '
+            f'alt="{htmlmod.escape(ALT[pid])}"></figure>')
+
+
 def ld(obj):
     return '<script type="application/ld+json">\n%s\n</script>' % obj
 
@@ -159,16 +191,16 @@ HOME_BODY = """
       <p class="label rv" style="margin-bottom:3rem">01 / Portfolio</p>
       <h2 id="portfolio-h" style="position:absolute;left:-9999px">Portfolio</h2>
       <div class="duo" style="margin-bottom:var(--band)">
-        <figure class="plate plate--r34 ph rv" data-ph="Photo 3:4"></figure>
-        <figure class="plate plate--r23 ph rv" data-ph="Photo 2:3"></figure>
+        [[9957]]
+        [[2858]]
       </div>
       <div class="trio" style="margin-bottom:var(--band)">
-        <figure class="plate plate--r23 ph rv" data-ph="Photo 2:3"></figure>
-        <figure class="plate plate--r43 ph rv" data-ph="Photo 4:3"></figure>
-        <figure class="plate plate--r34 ph rv" data-ph="Photo 3:4"></figure>
+        [[9487]]
+        [[9203]]
+        [[4461]]
       </div>
     </div>
-    <figure class="plate plate--r169 ph bleed rv" data-ph="Full-width photo"></figure>
+    [[9086 bleed]]
   </section>
 
   <section class="band" style="padding-top:0" aria-labelledby="work-h">
@@ -220,12 +252,12 @@ SESSIONS_BODY = """
     </div>
   </section>
 
-  <figure class="plate plate--r169 ph bleed rv" data-ph="Full-width photo"></figure>
+  [[9318 bleed]]
 
   <section class="band">
     <div class="wrap split">
       <div class="split__media">
-        <figure class="plate plate--r34 ph rv" data-ph="Photo 3:4"></figure>
+        [[9096]]
       </div>
       <div class="split__body prose rv">
         <h2>How a session works</h2>
@@ -252,9 +284,9 @@ SESSIONS_BODY = """
   <section class="band" style="padding-top:0">
     <div class="wrap">
       <div class="trio">
-        <figure class="plate plate--r23 ph rv" data-ph="Photo 2:3"></figure>
-        <figure class="plate plate--r43 ph rv" data-ph="Photo 4:3"></figure>
-        <figure class="plate plate--r34 ph rv" data-ph="Photo 3:4"></figure>
+        [[8734]]
+        [[9973]]
+        [[8406]]
       </div>
     </div>
   </section>
@@ -300,7 +332,7 @@ PRESETS_BODY = """
   <section class="band" style="padding-top:0">
     <div class="wrap split split--flip">
       <div class="split__media">
-        <figure class="plate plate--r43 ph rv" data-ph="Before / after"></figure>
+        [[4321]]
       </div>
       <div class="split__body prose rv">
         <h2>Why you might want them</h2>
@@ -368,7 +400,7 @@ WORKSHOP_BODY = """
     </div>
   </section>
 
-  <figure class="plate plate--r169 ph bleed rv" data-ph="Full-width photo"></figure>
+  [[9565 bleed]]
 
   <section class="band">
     <div class="wrap prose rv">
@@ -690,6 +722,7 @@ def build():
             body=page["body"], ig=INSTAGRAM, phone=PHONE, phone_href=PHONE_HREF,
             cssv=asset_v("css/style.css"), jsv=asset_v("js/main.js"),
         )
+        html = re.sub(r"\[\[([^\]]+)\]\]", photo, html)
         html = (html.replace("__CONTACT__", INSTAGRAM)
                     .replace("__PHONE_HREF__", PHONE_HREF)
                     .replace("__PHONE__", PHONE))
@@ -738,6 +771,10 @@ def selftest():
             assert token not in html, f"{f}: leftover {token}"
         assert re.search(r'style\.css\?v=[0-9a-f]{8}', html), f"{f}: нет версии у CSS"
         assert re.search(r'main\.js\?v=[0-9a-f]{8}', html), f"{f}: нет версии у JS"
+        assert "data-ph" not in html and "[[" not in html, f"{f}: placeholder photo left"
+        for src in re.findall(r'(?:src|srcset)="([^"]+)"', html):
+            for u in re.findall(r'(img/[^\s,"]+)', src):
+                assert (ROOT / u).exists(), f"{f}: missing {u}"
         assert "mailto:" not in html, f"{f}: mailto left behind, there is no email"
         assert html.count("<h1") == 1, f"{f}: expected exactly one h1"
         assert f'<link rel="canonical" href="{SITE}{page["url"]}">' in html, f

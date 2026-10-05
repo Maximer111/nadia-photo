@@ -356,7 +356,6 @@ a.plate:hover img, .plate.is-hover img { transform: scale(1.035); }
     grid-column: 1 / -1 !important;
     margin-top: 0 !important;
   }
-  .trio > *:nth-child(3) { display: none; }
 }
 
 /* --- pull quote --------------------------------------------------------- */
