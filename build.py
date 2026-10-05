@@ -8,6 +8,7 @@ Test:     python3 build.py --test
 Edit page copy in the *_BODY constants below; edit header/footer in SHELL.
 """
 import hashlib
+import json
 import html as htmlmod
 import os
 import pathlib
@@ -19,6 +20,7 @@ SITE = ("https://maximer111.github.io/nadia-photo"
 ROOT = pathlib.Path(__file__).parent
 
 NAV = [
+    ("/portfolio.html", "Portfolio"),
     ("/sessions.html", "Sessions"),
     ("/presets.html", "Presets"),
     ("/workshop.html", "1:1 Workshop"),
@@ -130,7 +132,91 @@ ALT = {
     "8406": "A little girl in sunglasses and a trench coat looking at her hands",
     "4321": "A woman in a white dress spreading a lace skirt into the sunset light",
     "9565": "A couple by yellow railings, she smells a pink bouquet and he smiles at her",
+    "0051": "Black and white: a mother hugs her laughing daughter from behind",
+    "0120": "Black and white: a girl kisses her mother's forehead on a city street",
+    "8164": "A mother holds her daughter on her lap in a dark doorway, both smiling",
+    "8188": "Black and white: mother and daughter sitting in a doorway, the girl laughing",
+    "8228": "Mother and daughter by a Photoautomat booth, the girl kicking up a leg",
+    "8376": "Black and white: a mother lifts her daughter into a hug",
+    "8400": "A child's hand and an adult's hand with a ladybird crawling between them",
+    "8626": "Black and white: a mother spins her daughter by the hands by an iron gate",
+    "8753": "Black and white: mother and daughter running toward each other by an iron gate",
+    "8795": "Mother and daughter holding hands against a stone wall",
+    "8905": "Black and white: a girl smiles at the camera, her mother's hands on her shoulders",
+    "9025": "Mother and daughter walking past a pale blue vintage car",
+    "9068": "Close-up of a girl's white tights beside her mother's lace hem and loafers",
+    "9169": "Black and white: a girl climbs on her laughing mother's back on the steps",
+    "9208": "A girl in a trench coat buckles her shoe on a sunlit doorstep",
+    "9727": "Black and white: a mother walks with her daughter, both smiling",
+    "9832": "Black and white: a girl holds her mother's face in her hands",
+    "0363": "A couple kissing in front of a carved wooden door, she leans back in a white dress",
+    "8886": "A couple kissing in a doorway in front of an ornate iron screen",
+    "8955": "A couple kissing in a green courtyard, she lifts her bouquet and one leg",
+    "9339": "A couple dancing on a tree-lined street, she raises the bouquet behind him",
+    "2552": "A woman in an off-shoulder white dress, her curls blown across her face",
+    "2613": "Black and white: a woman in a white dress, a veil lifted by the wind",
+    "2773": "A woman in a white dress twirling on a hilltop at dusk",
+    "3346": "A woman in a white dress and black boots sitting on dry grass",
+    "3463": "A woman in a white dress sitting on a hillside above a valley",
+    "3770": "A woman in a white dress twirling on a hill above the city",
+    "3782": "Black and white: a woman spinning, her dress flying out in a wide circle",
+    "3810": "A woman in a white dress turning away, looking back over her shoulder",
+    "3847": "Black and white: a woman in a white dress walking across a hilltop meadow",
+    "3994": "A woman under a lace veil, sunlight falling through the lace onto her face",
+    "4322": "A woman spreading a lace skirt against the sunset",
+    "4414": "A woman in a white dress holding out her skirt against a sunset sky",
+    "4451": "A woman in a white dress lifting the fabric into the low sun",
+    "4494": "A woman gathering her white skirt in golden evening light",
 }
+
+GALLERY_TITLES = {"family": "Family", "couple": "Couple", "individual": "Individual"}
+
+
+def portfolio_body():
+    manifest = json.loads((ROOT / "img/g/manifest.json").read_text())
+    jump = " &middot; ".join(f'<a href="#{s}">{GALLERY_TITLES[s]}</a>' for s in manifest)
+    sections = []
+    for s, items in manifest.items():
+        figs = "\n".join(
+            f'        <a class="g__item" href="img/g/{pid}-1800.jpg">'
+            f'<img src="img/g/{pid}-800.jpg" width="{w}" height="{h}" loading="lazy" '
+            f'decoding="async" alt="{htmlmod.escape(ALT[pid])}"></a>'
+            for pid, w, h in items)
+        sections.append(f"""
+  <section class="band g" id="{s}" aria-labelledby="{s}-h" style="padding-top:0">
+    <div class="wrap">
+      <h2 class="label g__title" id="{s}-h">{GALLERY_TITLES[s]} <span>{len(items)}</span></h2>
+      <div class="g__grid">
+{figs}
+      </div>
+    </div>
+  </section>""")
+    return f"""
+  <section class="page-head">
+    <div class="wrap">
+      <span class="label rv">Portfolio</span>
+      <h1 class="display rv">Selected <em>work</em></h1>
+      <p class="lede rv">Families, couples and portraits, shot in Budapest.</p>
+      <p class="g__jump rv">{jump}</p>
+    </div>
+  </section>
+{"".join(sections)}
+
+  <section class="band cta">
+    <div class="wrap">
+      <h2 class="display rv">Save the moment</h2>
+      <p class="rv">Message me on Instagram or call, and I will tell you which dates are open.</p>
+      <a class="btn rv" href="__CONTACT__" rel="noopener" target="_blank"><span>Message me on Instagram</span></a>
+    </div>
+  </section>
+
+  <dialog class="lb" aria-label="Photo viewer">
+    <img alt="">
+    <button class="lb__btn lb__prev" type="button" aria-label="Previous photo">&lsaquo;</button>
+    <button class="lb__btn lb__next" type="button" aria-label="Next photo">&rsaquo;</button>
+    <button class="lb__btn lb__close" type="button" aria-label="Close">&times;</button>
+  </dialog>
+"""
 
 
 def photo(m):
@@ -201,6 +287,9 @@ HOME_BODY = """
       </div>
     </div>
     [[9086 bleed]]
+    <div class="wrap" style="text-align:center;margin-top:3.5rem">
+      <a class="btn rv" href="portfolio.html"><span>See the full portfolio</span></a>
+    </div>
   </section>
 
   <section class="band" style="padding-top:0" aria-labelledby="work-h">
@@ -583,6 +672,14 @@ LEGAL_POLICY = """
 """
 
 PAGES = [
+    dict(
+        file="portfolio.html", url="/portfolio.html",
+        title="Portfolio | Nadiia Loban Photography, Budapest",
+        desc="Family, couple and individual photography by Nadiia Loban in Budapest. "
+             "48 photographs from recent sessions.",
+        body=portfolio_body(),
+        schema="",
+    ),
     dict(
         file="index.html", url="/",
         title="Nadiia Loban Photography, Photographer in Budapest",

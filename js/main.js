@@ -32,6 +32,44 @@
     });
   }
 
+  // portfolio viewer: links still open the full file without JS
+  const lb = document.querySelector('.lb');
+  const shots = [...document.querySelectorAll('.g__item')];
+  if (lb && shots.length && lb.showModal) {
+    const big = lb.querySelector('img');
+    let at = 0;
+    const show = i => {
+      at = (i + shots.length) % shots.length;
+      const thumb = shots[at].querySelector('img');
+      const want = at;
+      big.src = thumb.currentSrc || thumb.src;
+      big.alt = thumb.alt;
+      const hi = new Image();
+      hi.onload = () => { if (at === want) big.src = hi.src; };
+      hi.src = shots[at].href;
+    };
+    shots.forEach((a, i) => a.addEventListener('click', e => {
+      e.preventDefault(); show(i); lb.showModal();
+    }));
+    lb.querySelector('.lb__prev').addEventListener('click', () => show(at - 1));
+    lb.querySelector('.lb__next').addEventListener('click', () => show(at + 1));
+    lb.querySelector('.lb__close').addEventListener('click', () => lb.close());
+    lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
+    lb.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(at - 1);
+      if (e.key === 'ArrowRight') show(at + 1);
+    });
+    let x0 = null;
+    lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(at + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+    lb.addEventListener('close', () => { big.removeAttribute('src'); });
+  }
+
   // scroll reveals — stagger siblings inside the same block
   const items = document.querySelectorAll('.rv');
   if (!items.length) return;
