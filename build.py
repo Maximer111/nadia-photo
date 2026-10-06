@@ -2,7 +2,7 @@
 """Builds the static site from one shell template + per-page content.
 
 Run:      python3 build.py            (production build)
-Staging:  STAGING=1 python3 build.py  (noindex until real prices and dates are in)
+Staging:  STAGING=1 python3 build.py  (noindex, robots Disallow)
 Test:     python3 build.py --test
 
 Edit page copy in the *_BODY constants below; edit header/footer in SHELL.
@@ -21,9 +21,6 @@ ROOT = pathlib.Path(__file__).parent
 NAV = [
     ("/portfolio", "Portfolio"),
     ("/sessions", "Sessions"),
-    ("/presets", "Presets"),
-    ("/workshop", "1:1 Workshop"),
-    ("/schedule", "Schedule"),
 ]
 
 BRAND = "Nadiia Loban Photography"
@@ -96,7 +93,6 @@ SHELL = """<!doctype html>
     </div>
     <div class="foot-bottom">
       <span>&copy; 2026 Nadiia Loban Photography. All photographs are protected by copyright.</span>
-      <span><a href="/terms">Terms</a> &nbsp;&middot;&nbsp; <a href="/policy">Privacy</a></span>
     </div>
   </div>
 </footer>
@@ -218,8 +214,19 @@ def portfolio_body():
 """
 
 
+GALLERY_DIMS = {pid: (w, h) for items in json.loads(
+    (ROOT / "img/g/manifest.json").read_text()).values() for pid, w, h in items}
+
+
 def photo(m):
     pid, *extra = m.group(1).split()
+    if pid.startswith("g:"):
+        pid = pid[2:]
+        w, h = GALLERY_DIMS[pid]
+        return (f'<figure class="plate rv" style="aspect-ratio:{w}/{h}">'
+                f'<img src="img/g/{pid}-800.jpg" srcset="img/g/{pid}-800.jpg 800w, img/g/{pid}-1800.jpg 1800w" '
+                f'sizes="(max-width: 760px) 92vw, 50vw" width="{w}" height="{h}" loading="lazy" '
+                f'decoding="async" alt="{htmlmod.escape(ALT[pid])}"></figure>')
     cls, _, widths = SPEC[pid]
     big = max(widths)
     srcset = ", ".join(f"img/p/{pid}-{w}.jpg {w}w" for w in widths)
@@ -275,50 +282,33 @@ HOME_BODY = """
     <div class="wrap">
       <p class="label rv" style="margin-bottom:3rem">01 / Portfolio</p>
       <h2 id="portfolio-h" style="position:absolute;left:-9999px">Portfolio</h2>
-      <div class="duo" style="margin-bottom:var(--band)">
-        [[9957]]
-        [[2858]]
-      </div>
       <div class="trio" style="margin-bottom:var(--band)">
-        [[9487]]
-        [[9203]]
-        [[4461]]
+        [[g:4322]]
+        [[g:2858]]
+        [[g:2552]]
+      </div>
+      <div class="duo" style="margin-bottom:var(--band)">
+        [[g:3782]]
+        [[g:3994]]
+      </div>
+      <div style="max-width:56rem;margin:0 auto var(--band)">
+        [[g:9203]]
+      </div>
+      <div class="duo duo--flip" style="margin-bottom:var(--band)">
+        [[g:8886]]
+        [[g:9318]]
+      </div>
+      <div class="duo" style="margin-bottom:var(--band)">
+        [[g:9832]]
+        [[g:9096]]
+      </div>
+      <div class="duo duo--flip">
+        [[g:8753]]
+        [[g:0051]]
       </div>
     </div>
-    [[9086 bleed]]
     <div class="wrap" style="text-align:center;margin-top:3.5rem">
       <a class="btn rv" href="portfolio"><span>See the full portfolio</span></a>
-    </div>
-  </section>
-
-  <section class="band" style="padding-top:0" aria-labelledby="work-h">
-    <div class="wrap">
-      <p class="label rv" style="margin-bottom:3rem">02 / What I do</p>
-      <h2 id="work-h" class="display rv" style="font-size:var(--step-2);max-width:20ch;margin-bottom:4rem">
-        Photo sessions, teaching and my <em style="font-style:italic">presets</em>
-      </h2>
-      <div class="offers">
-        <a class="offer rv" href="sessions">
-          <div class="offer__name"><span>Shooting</span>Photo sessions</div>
-          <p class="offer__desc">Individual. Couple. Family. Event. In Budapest and travelling across Europe.</p>
-          <div class="offer__price">from 000&nbsp;&euro;</div>
-        </a>
-        <a class="offer rv" href="presets">
-          <div class="offer__name"><span>Editing</span>My presets</div>
-          <p class="offer__desc">The Lightroom Classic packs I use on my own shoots. Colour and black and white.</p>
-          <div class="offer__price">from 00&nbsp;&euro;</div>
-        </a>
-        <a class="offer rv" href="workshop">
-          <div class="offer__name"><span>Teaching</span>1:1 Workshop</div>
-          <p class="offer__desc">A full day together: theory, shooting a real couple, selection and editing.</p>
-          <div class="offer__price">from 0&nbsp;000&nbsp;&euro;</div>
-        </a>
-        <a class="offer rv" href="schedule">
-          <div class="offer__name"><span>Groups</span>Workshop schedule</div>
-          <p class="offer__desc">Two-day group workshops in European cities. Dates, languages and places.</p>
-          <div class="offer__price">2026</div>
-        </a>
-      </div>
     </div>
   </section>
 
@@ -361,7 +351,6 @@ SESSIONS_BODY = """
           <li>About two hours of shooting</li>
           <li>Guidance on what to wear and where to meet, sent in advance</li>
           <li>150+ edited photographs</li>
-          <li>Delivered within NUMBER weeks after the session</li>
         </ul>
         <p style="color:var(--ink-faint);font-size:var(--step--1);letter-spacing:.06em">
           I do not retouch skin. That is a deliberate choice, not a shortcut.</p>
@@ -381,21 +370,17 @@ SESSIONS_BODY = """
 
   <section class="band" style="background:var(--paper-deep)">
     <div class="wrap">
-      <p class="label rv" style="margin-bottom:3rem">Pricing</p>
+      <p class="label rv" style="margin-bottom:3rem">Where we shoot</p>
       <div class="offers">
         <div class="offer rv">
           <div class="offer__name"><span>Budapest</span>Session in the city</div>
           <p class="offer__desc">Individual, couple or family. We choose the location together: the Danube, Buda, the courtyards of Pest, the baths.</p>
-          <div class="offer__price">000&nbsp;&euro;</div>
         </div>
         <div class="offer rv">
           <div class="offer__name"><span>Europe</span>Travel session</div>
           <p class="offer__desc">Vienna, Prague, Paris, Lisbon and beyond. The fee and travel costs are agreed per destination.</p>
-          <div class="offer__price">on request</div>
         </div>
       </div>
-      <p style="margin-top:2rem;color:var(--ink-faint);font-size:var(--step--1);letter-spacing:.06em">
-        Prices exclude VAT. The date is held with a deposit.</p>
     </div>
   </section>
 
@@ -745,6 +730,18 @@ PAGES = [
   "url": "%(site)s/sessions"
 }""" % {"site": SITE}),
     ),
+]
+
+# not built until Nadia prepares presets, workshops and real legal text; move back into PAGES then
+PARKED = [
+    dict(file="terms.html", url="/terms",
+         title="Terms | Nadiia Loban Photography",
+         desc="Terms of service and sale of digital goods.",
+         body=LEGAL_TERMS, schema="", noindex=True),
+    dict(file="policy.html", url="/policy",
+         title="Privacy Policy | Nadiia Loban Photography",
+         desc="How personal data of website visitors is processed.",
+         body=LEGAL_POLICY, schema="", noindex=True),
     dict(
         file="presets.html", url="/presets",
         title="Lightroom Presets | Nadiia Loban Photography",
@@ -787,14 +784,6 @@ PAGES = [
   "itemListElement": []
 }"""),
     ),
-    dict(file="terms.html", url="/terms",
-         title="Terms | Nadiia Loban Photography",
-         desc="Terms of service and sale of digital goods.",
-         body=LEGAL_TERMS, schema="", noindex=True),
-    dict(file="policy.html", url="/policy",
-         title="Privacy Policy | Nadiia Loban Photography",
-         desc="How personal data of website visitors is processed.",
-         body=LEGAL_POLICY, schema="", noindex=True),
 ]
 
 
