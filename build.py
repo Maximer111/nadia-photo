@@ -2,7 +2,7 @@
 """Builds the static site from one shell template + per-page content.
 
 Run:      python3 build.py            (production build)
-Staging:  STAGING=1 python3 build.py  (GitHub Pages URL + noindex)
+Staging:  STAGING=1 python3 build.py  (noindex until real prices and dates are in)
 Test:     python3 build.py --test
 
 Edit page copy in the *_BODY constants below; edit header/footer in SHELL.
@@ -15,16 +15,15 @@ import pathlib
 import re
 
 STAGING = os.environ.get("STAGING") == "1"
-SITE = ("https://maximer111.github.io/nadia-photo"
-        if STAGING else "https://nadiaphoto.mensreactivation.com")
+SITE = "https://nadiphoto.com"
 ROOT = pathlib.Path(__file__).parent
 
 NAV = [
-    ("/portfolio.html", "Portfolio"),
-    ("/sessions.html", "Sessions"),
-    ("/presets.html", "Presets"),
-    ("/workshop.html", "1:1 Workshop"),
-    ("/schedule.html", "Schedule"),
+    ("/portfolio", "Portfolio"),
+    ("/sessions", "Sessions"),
+    ("/presets", "Presets"),
+    ("/workshop", "1:1 Workshop"),
+    ("/schedule", "Schedule"),
 ]
 
 BRAND = "Nadiia Loban Photography"
@@ -97,7 +96,7 @@ SHELL = """<!doctype html>
     </div>
     <div class="foot-bottom">
       <span>&copy; 2026 Nadiia Loban Photography. All photographs are protected by copyright.</span>
-      <span><a href="/terms.html">Terms</a> &nbsp;&middot;&nbsp; <a href="/policy.html">Privacy</a></span>
+      <span><a href="/terms">Terms</a> &nbsp;&middot;&nbsp; <a href="/policy">Privacy</a></span>
     </div>
   </div>
 </footer>
@@ -288,7 +287,7 @@ HOME_BODY = """
     </div>
     [[9086 bleed]]
     <div class="wrap" style="text-align:center;margin-top:3.5rem">
-      <a class="btn rv" href="portfolio.html"><span>See the full portfolio</span></a>
+      <a class="btn rv" href="portfolio"><span>See the full portfolio</span></a>
     </div>
   </section>
 
@@ -299,22 +298,22 @@ HOME_BODY = """
         Photo sessions, teaching and my <em style="font-style:italic">presets</em>
       </h2>
       <div class="offers">
-        <a class="offer rv" href="sessions.html">
+        <a class="offer rv" href="sessions">
           <div class="offer__name"><span>Shooting</span>Photo sessions</div>
           <p class="offer__desc">Individual. Couple. Family. Event. In Budapest and travelling across Europe.</p>
           <div class="offer__price">from 000&nbsp;&euro;</div>
         </a>
-        <a class="offer rv" href="presets.html">
+        <a class="offer rv" href="presets">
           <div class="offer__name"><span>Editing</span>My presets</div>
           <p class="offer__desc">The Lightroom Classic packs I use on my own shoots. Colour and black and white.</p>
           <div class="offer__price">from 00&nbsp;&euro;</div>
         </a>
-        <a class="offer rv" href="workshop.html">
+        <a class="offer rv" href="workshop">
           <div class="offer__name"><span>Teaching</span>1:1 Workshop</div>
           <p class="offer__desc">A full day together: theory, shooting a real couple, selection and editing.</p>
           <div class="offer__price">from 0&nbsp;000&nbsp;&euro;</div>
         </a>
-        <a class="offer rv" href="schedule.html">
+        <a class="offer rv" href="schedule">
           <div class="offer__name"><span>Groups</span>Workshop schedule</div>
           <p class="offer__desc">Two-day group workshops in European cities. Dates, languages and places.</p>
           <div class="offer__price">2026</div>
@@ -673,7 +672,7 @@ LEGAL_POLICY = """
 
 PAGES = [
     dict(
-        file="portfolio.html", url="/portfolio.html",
+        file="portfolio.html", url="/portfolio",
         title="Portfolio | Nadiia Loban Photography, Budapest",
         desc="Family, couple and individual photography by Nadiia Loban in Budapest. "
              "48 photographs from recent sessions.",
@@ -728,7 +727,7 @@ PAGES = [
 }""" % {"site": SITE}),
     ),
     dict(
-        file="sessions.html", url="/sessions.html",
+        file="sessions.html", url="/sessions",
         title="Photo Sessions in Budapest | Nadiia Loban Photography",
         desc="Couple, family and individual photo sessions in Budapest and across Europe. "
              "Two hours, natural light, 150+ edited photographs.",
@@ -743,11 +742,11 @@ PAGES = [
     { "@type": "City", "name": "Budapest" },
     { "@type": "Place", "name": "Europe" }
   ],
-  "url": "%(site)s/sessions.html"
+  "url": "%(site)s/sessions"
 }""" % {"site": SITE}),
     ),
     dict(
-        file="presets.html", url="/presets.html",
+        file="presets.html", url="/presets",
         title="Lightroom Presets | Nadiia Loban Photography",
         desc="Adobe Lightroom Classic preset packs used on my own shoots. Colour and "
              "black and white sets, plus a two-preset test pack.",
@@ -760,7 +759,7 @@ PAGES = [
 }"""),
     ),
     dict(
-        file="workshop.html", url="/workshop.html",
+        file="workshop.html", url="/workshop",
         title="1:1 Photography Workshop | Nadiia Loban",
         desc="A full day of one-to-one photography teaching: theory, a practical shoot "
              "with a couple, selection and editing.",
@@ -772,11 +771,11 @@ PAGES = [
   "description": "A full day of one-to-one photography teaching: theory, a practical shoot with a couple, selection and editing.",
   "inLanguage": "en",
   "provider": { "@type": "Person", "@id": "%(site)s/#person", "name": "Nadiia Loban" },
-  "url": "%(site)s/workshop.html"
+  "url": "%(site)s/workshop"
 }""" % {"site": SITE}),
     ),
     dict(
-        file="schedule.html", url="/schedule.html",
+        file="schedule.html", url="/schedule",
         title="Workshop Schedule 2026 | Nadiia Loban",
         desc="Dates for two-day group photography workshops in 2026: city, language, "
              "number of places and how to join.",
@@ -788,11 +787,11 @@ PAGES = [
   "itemListElement": []
 }"""),
     ),
-    dict(file="terms.html", url="/terms.html",
+    dict(file="terms.html", url="/terms",
          title="Terms | Nadiia Loban Photography",
          desc="Terms of service and sale of digital goods.",
          body=LEGAL_TERMS, schema="", noindex=True),
-    dict(file="policy.html", url="/policy.html",
+    dict(file="policy.html", url="/policy",
          title="Privacy Policy | Nadiia Loban Photography",
          desc="How personal data of website visitors is processed.",
          body=LEGAL_POLICY, schema="", noindex=True),
@@ -884,7 +883,7 @@ def selftest():
         if not STAGING:
             assert ("noindex" in html) == bool(page.get("noindex")), f
     sm = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
-    assert "/terms.html" not in sm and "/policy.html" not in sm, "legal pages leaked into sitemap"
+    assert "/terms<" not in sm and "/policy<" not in sm, "legal pages leaked into sitemap"
     assert sm.count("<url>") == len([p for p in PAGES if not p.get("noindex")])
     print("selftest: ok")
 

@@ -1,0 +1,9 @@
+{
+  "name": "nadia-photo",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./dist" },
+  "routes": [
+    { "pattern": "nadiphoto.com", "custom_domain": true },
+    { "pattern": "www.nadiphoto.com", "custom_domain": true }
+  ]
+}
