@@ -30,28 +30,45 @@
       "@type": "Person",
       "@id": "https://nadiphoto.com/#person",
       "name": "Nadiia Loban",
+      "alternateName": "Nadia Loban",
       "jobTitle": "Photographer",
+      "description": "Photographer based in Budapest. Cinematic portraits of individuals, couples and families, and event photography in Budapest and across Europe.",
+      "image": "https://nadiphoto.com/img/nadia-hero-1400.jpg",
       "url": "https://nadiphoto.com/",
       "telephone": "+380676903262",
       "sameAs": ["https://www.instagram.com/nadi_loban/"],
-      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
-      "knowsAbout": ["Portrait photography", "Couple photography", "Family photography", "Event photography"]
+      "homeLocation": { "@type": "City", "name": "Budapest", "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" } },
+      "worksFor": { "@id": "https://nadiphoto.com/#business" },
+      "knowsAbout": ["Portrait photography", "Couple photography", "Family photography", "Event photography", "Black and white photography"]
     },
     {
       "@type": "ProfessionalService",
       "@id": "https://nadiphoto.com/#business",
       "name": "Nadiia Loban Photography",
-      "image": "https://nadiphoto.com/img/og.jpg",
+      "alternateName": "Nadia Loban Photography",
+      "description": "Individual, couple, family and event photography in Budapest and across Europe. Cinematic portraits for those who want to remember themselves alive.",
+      "slogan": "We will never be so young again! Save the moment!",
+      "image": ["https://nadiphoto.com/img/og.jpg", "https://nadiphoto.com/img/nadia-hero-1400.jpg"],
       "url": "https://nadiphoto.com/",
       "founder": { "@id": "https://nadiphoto.com/#person" },
       "telephone": "+380676903262",
       "sameAs": ["https://www.instagram.com/nadi_loban/"],
+      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
       "areaServed": [
         { "@type": "City", "name": "Budapest" },
+        { "@type": "Country", "name": "Hungary" },
         { "@type": "Place", "name": "Europe" }
       ],
-      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
-      "priceRange": "€€"
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Photography",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Individual portrait photo session", "url": "https://nadiphoto.com/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Couple photo session", "url": "https://nadiphoto.com/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Family photo session", "url": "https://nadiphoto.com/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event photography", "url": "https://nadiphoto.com/sessions" } }
+        ]
+      }
     },
     {
       "@type": "WebSite",
@@ -59,7 +76,7 @@
       "url": "https://nadiphoto.com/",
       "name": "Nadiia Loban Photography",
       "inLanguage": "en",
-      "publisher": { "@id": "https://nadiphoto.com/#person" }
+      "publisher": { "@id": "https://nadiphoto.com/#business" }
     }
   ]
 }

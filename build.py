@@ -167,6 +167,30 @@ ALT = {
 GALLERY_TITLES = {"family": "Family", "couple": "Couple", "individual": "Individual"}
 
 
+def portfolio_schema():
+    manifest = json.loads((ROOT / "img/g/manifest.json").read_text())
+    images = [{
+        "@type": "ImageObject",
+        "contentUrl": f"{SITE}/img/g/{pid}-1800.jpg",
+        "thumbnailUrl": f"{SITE}/img/g/{pid}-800.jpg",
+        "caption": ALT[pid],
+        "genre": GALLERY_TITLES[s],
+        "creator": {"@id": f"{SITE}/#person"},
+        "creditText": "Nadiia Loban Photography",
+        "copyrightHolder": {"@id": f"{SITE}/#person"},
+        "copyrightNotice": "© Nadiia Loban Photography",
+    } for s, items in manifest.items() for pid, _, _ in items]
+    return ld(json.dumps({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "url": f"{SITE}/portfolio",
+        "name": "Portfolio of Nadiia Loban, photographer in Budapest",
+        "about": {"@id": f"{SITE}/#business"},
+        "mainEntity": {"@type": "ImageGallery", "name": "Family, couple and individual photography",
+                       "author": {"@id": f"{SITE}/#person"}, "associatedMedia": images},
+    }, indent=1, ensure_ascii=False))
+
+
 def portfolio_body():
     manifest = json.loads((ROOT / "img/g/manifest.json").read_text())
     jump = " &middot; ".join(f'<a href="#{s}">{GALLERY_TITLES[s]}</a>' for s in manifest)
@@ -662,7 +686,7 @@ PAGES = [
         desc="Family, couple and individual photography by Nadiia Loban in Budapest. "
              "48 photographs from recent sessions.",
         body=portfolio_body(),
-        schema="",
+        schema=portfolio_schema(),
     ),
     dict(
         file="index.html", url="/",
@@ -677,28 +701,45 @@ PAGES = [
       "@type": "Person",
       "@id": "%(site)s/#person",
       "name": "Nadiia Loban",
+      "alternateName": "Nadia Loban",
       "jobTitle": "Photographer",
+      "description": "Photographer based in Budapest. Cinematic portraits of individuals, couples and families, and event photography in Budapest and across Europe.",
+      "image": "%(site)s/img/nadia-hero-1400.jpg",
       "url": "%(site)s/",
       "telephone": "+380676903262",
       "sameAs": ["https://www.instagram.com/nadi_loban/"],
-      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
-      "knowsAbout": ["Portrait photography", "Couple photography", "Family photography", "Event photography"]
+      "homeLocation": { "@type": "City", "name": "Budapest", "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" } },
+      "worksFor": { "@id": "%(site)s/#business" },
+      "knowsAbout": ["Portrait photography", "Couple photography", "Family photography", "Event photography", "Black and white photography"]
     },
     {
       "@type": "ProfessionalService",
       "@id": "%(site)s/#business",
       "name": "Nadiia Loban Photography",
-      "image": "%(site)s/img/og.jpg",
+      "alternateName": "Nadia Loban Photography",
+      "description": "Individual, couple, family and event photography in Budapest and across Europe. Cinematic portraits for those who want to remember themselves alive.",
+      "slogan": "We will never be so young again! Save the moment!",
+      "image": ["%(site)s/img/og.jpg", "%(site)s/img/nadia-hero-1400.jpg"],
       "url": "%(site)s/",
       "founder": { "@id": "%(site)s/#person" },
       "telephone": "+380676903262",
       "sameAs": ["https://www.instagram.com/nadi_loban/"],
+      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
       "areaServed": [
         { "@type": "City", "name": "Budapest" },
+        { "@type": "Country", "name": "Hungary" },
         { "@type": "Place", "name": "Europe" }
       ],
-      "address": { "@type": "PostalAddress", "addressLocality": "Budapest", "addressCountry": "HU" },
-      "priceRange": "€€"
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Photography",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Individual portrait photo session", "url": "%(site)s/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Couple photo session", "url": "%(site)s/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Family photo session", "url": "%(site)s/sessions" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event photography", "url": "%(site)s/sessions" } }
+        ]
+      }
     },
     {
       "@type": "WebSite",
@@ -706,7 +747,7 @@ PAGES = [
       "url": "%(site)s/",
       "name": "Nadiia Loban Photography",
       "inLanguage": "en",
-      "publisher": { "@id": "%(site)s/#person" }
+      "publisher": { "@id": "%(site)s/#business" }
     }
   ]
 }""" % {"site": SITE}),
@@ -830,13 +871,47 @@ def build():
         (ROOT / page["file"]).write_text(html, encoding="utf-8")
         print("  ✓", page["file"])
 
+    def images(u):
+        html = (ROOT / next(p["file"] for p in PAGES if p["url"] == u)).read_text(encoding="utf-8")
+        ids = dict.fromkeys(re.findall(r'img/g/(\d{4})-', html))
+        return "".join(f"<image:image><image:loc>{SITE}/img/g/{i}-1800.jpg</image:loc></image:image>" for i in ids)
+
     entries = "\n".join(
         f"  <url><loc>{SITE}{u}</loc><changefreq>monthly</changefreq>"
-        f"<priority>{'1.0' if u == '/' else '0.8'}</priority></url>" for u in urls)
+        f"<priority>{'1.0' if u == '/' else '0.8'}</priority>{images(u)}</url>" for u in urls)
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
         f"{entries}\n</urlset>\n", encoding="utf-8")
+
+    (ROOT / "llms.txt").write_text(f"""# Nadiia Loban Photography
+
+> Nadiia (Nadia) Loban is a photographer based in Budapest, Hungary. She shoots cinematic portraits of individuals, couples and families, and events, in Budapest and across Europe, in colour and black and white.
+
+"I create cinematic portraits for those who want to remember themselves alive."
+
+## Services
+- Individual portrait sessions
+- Couple sessions
+- Family sessions
+- Event photography
+- Sessions in Budapest (the Danube, Buda, the courtyards of Pest, the baths) and travel sessions across Europe
+
+## How a session works
+About two hours of shooting, no posing: simple directions and the moments in between. 150+ edited photographs. No skin retouching.
+
+## Contact
+- Phone: +380 67 690 32 62
+- Instagram: https://www.instagram.com/nadi_loban/
+- Website: {SITE}/
+
+## Pages
+- [Home]({SITE}/): selected work and contacts
+- [Portfolio]({SITE}/portfolio): 48 photographs, family, couple and individual
+- [Photo sessions]({SITE}/sessions): how a session works and where we shoot
+""", encoding="utf-8")
+    print("  ✓ llms.txt")
     print("  ✓ sitemap.xml")
 
     (ROOT / "robots.txt").write_text(
